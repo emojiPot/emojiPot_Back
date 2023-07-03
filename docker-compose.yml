@@ -1,35 +1,9 @@
 version: "3"
 
 services:
-  mysql:
-    container_name: mysql
-    image: mysql:latest
-    ports:
-      - "3307:3306"
-    restart: always
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-    volumes:
-      - emojipot-db:/usr/src/mysql
-
   backend:
-    container_name: backend
     build: .
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/emojipot
-      SPRING_DATASOURCE_USER: root
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     expose:
       - 8080
     ports:
       - "8080:8080"
-    depends_on:
-      - mysql
-
-volumes:
-  emojipot-db:
