@@ -1,0 +1,20 @@
+profiles:
+  default: local
+spring:
+  datasource:
+    include:
+      - local
+
+
+  jpa:
+    database: mysql
+    generate-ddl: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          time_zone: Asia/Seoul
+    hibernate:
+      ddl-auto: create
