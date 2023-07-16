@@ -1,37 +1,28 @@
 package com.hanium.emoji_pot.domain.posts.dto;
 
 import com.hanium.emoji_pot.domain.posts.Post;
-import com.hanium.emoji_pot.domain.users.User;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotEmpty;
 
 @Getter
-@NoArgsConstructor
-public class PostRequestDto {
-
-    @NotNull
-    private Long userId;
+public class PostUpdateRequestDto {
 
     @Column(length = 30)
     private String location;
 
-    @NotBlank
+    @NotEmpty
     private Integer emotion;
 
-    @NotBlank
+    @NotEmpty
     private String record;
 
-    public Post toEntity(User user) {
+    public Post toEntity() {
         return Post.builder()
-                .user(user)
                 .location(location)
                 .emotion(emotion)
                 .record(record)
                 .build();
     }
-
 }
