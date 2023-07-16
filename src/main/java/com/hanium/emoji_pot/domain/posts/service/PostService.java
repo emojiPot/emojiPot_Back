@@ -44,4 +44,8 @@ public class PostService {
     public void deletePost(Long postId) {
         findEntity(postId).deletePost();
     }
+
+    public PostResponseDto findByPostId(Long postId) {
+        return PostResponseDto.of(findEntity(postId));
+    }
 }

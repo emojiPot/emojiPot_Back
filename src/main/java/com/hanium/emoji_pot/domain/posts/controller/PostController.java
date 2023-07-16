@@ -34,4 +34,10 @@ public class PostController {
     public void deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
     }
+
+    @GetMapping("/{post_id}")
+    @ResponseStatus(HttpStatus.OK)
+    public PostResponseDto getPost(@PathVariable Long postId) {
+        return postService.findByPostId(postId);
+    }
 }
