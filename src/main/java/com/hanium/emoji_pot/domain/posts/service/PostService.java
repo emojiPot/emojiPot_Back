@@ -39,4 +39,9 @@ public class PostService {
         entity.updatePost(postUpdateRequest);
         return PostResponseDto.of(entity);
     }
+
+    @Transactional
+    public void deletePost(Long postId) {
+        findEntity(postId).deletePost();
+    }
 }
