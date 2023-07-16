@@ -48,4 +48,11 @@ public class PostService {
     public PostResponseDto findByPostId(Long postId) {
         return PostResponseDto.of(findEntity(postId));
     }
+
+    public List<PostResponseDto> findAll() {
+        return postRepository.findAllByIsDeleted(false)
+                .stream()
+                .map(PostResponseDto::of)
+                .collect(Collectors.toList());
+    }
 }

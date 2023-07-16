@@ -40,4 +40,10 @@ public class PostController {
     public PostResponseDto getPost(@PathVariable Long postId) {
         return postService.findByPostId(postId);
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<PostResponseDto> getAllPosts() {
+        return postService.findAll();
+    }
 }
