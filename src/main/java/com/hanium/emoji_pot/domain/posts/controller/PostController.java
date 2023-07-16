@@ -23,4 +23,9 @@ public class PostController {
     public PostResponseDto savePost(@Validated @RequestBody PostRequestDto postRequest) {
         return postService.savePost(postRequest);
     }
+
+    @PatchMapping("/{post_id}")
+    public PostResponseDto updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequestDto postUpdateRequest) {
+        return postService.updatePost(postId, postUpdateRequest);
+    }
 }

@@ -27,4 +27,16 @@ public class PostService {
         Post entity = postRepository.save(postRequest.toEntity(user));
         return PostResponseDto.of(entity);
     }
+
+    public Post findEntity(Long postId) {
+        return postRepository.findByPostIdAndIsDeleted(postId, false)
+                .orElseThrow(() -> new NotFoundException("게시물을 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto postUpdateRequest) {
+        Post entity = findEntity(postId);
+        entity.updatePost(postUpdateRequest);
+        return PostResponseDto.of(entity);
+    }
 }
