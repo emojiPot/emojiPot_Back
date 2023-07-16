@@ -1,27 +1,26 @@
 package com.hanium.emoji_pot.domain.posts.controller;
 
+import com.hanium.emoji_pot.domain.posts.dto.PostRequestDto;
+import com.hanium.emoji_pot.domain.posts.dto.PostResponseDto;
+import com.hanium.emoji_pot.domain.posts.dto.PostUpdateRequestDto;
 import com.hanium.emoji_pot.domain.posts.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
+@RequestMapping("/v1/posts")
 @RequiredArgsConstructor
 public class PostController {
+
     private final PostService postService;
 
-    @PostMapping("/v1/posts")
-    public void uploadPost() {}
-
-    @PutMapping("/v1/posts/{post_id}")
-    public void updatePost() {}
-
-    @DeleteMapping("/v1/posts/{post_id}")
-    public void deletePost() {}
-
-    @GetMapping("/v1/posts/{post_id}")
-    public void getPost() {}
-
-    @GetMapping("/v1/posts")
-    public void getAllPosts() {}
-
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public PostResponseDto savePost(@Validated @RequestBody PostRequestDto postRequest) {
+        return postService.savePost(postRequest);
+    }
 }
