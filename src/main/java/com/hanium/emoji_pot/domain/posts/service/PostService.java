@@ -55,4 +55,11 @@ public class PostService {
                 .map(PostResponseDto::of)
                 .collect(Collectors.toList());
     }
+
+    public List<PostResponseDto> findAllByLocation(String location) {
+        return postRepository.findAllByLocationAndIsDeleted(location, false)
+                .stream()
+                .map(PostResponseDto::of)
+                .collect(Collectors.toList());
+    }
 }

@@ -46,4 +46,10 @@ public class PostController {
     public List<PostResponseDto> getAllPosts() {
         return postService.findAll();
     }
+
+    @GetMapping("/location")
+    public List<PostResponseDto> getByLocation(@RequestParam String location) {
+        return postService.findAllByLocation(location);
+    }
+
 }
