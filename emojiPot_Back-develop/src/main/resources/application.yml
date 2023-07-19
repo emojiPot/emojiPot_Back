@@ -1,0 +1,22 @@
+profiles:
+  default: local
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://emoji-pot.ctghw7cf2efu.ap-southeast-2.rds.amazonaws.com:3306/emoji_pot?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: emojipot
+    password: emoji123
+
+  jpa:
+    database: mysql
+    generate-ddl: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          time_zone: Asia/Seoul
+    hibernate:
+      ddl-auto: update
