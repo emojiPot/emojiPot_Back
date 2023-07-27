@@ -34,9 +34,8 @@ public class UserDto {
     private Integer is_deleted;
 
     @Builder
-    public UserDto(Long user_id, String name, String username, String email, String password,
+    public UserDto(String name, String username, String email, String password,
                    String profile_image, String introduce, String created_at, String updated_at, Integer is_deleted) {
-        this.user_id = user_id;
         this.name = name;
         this.username = username;
         this.email = email;

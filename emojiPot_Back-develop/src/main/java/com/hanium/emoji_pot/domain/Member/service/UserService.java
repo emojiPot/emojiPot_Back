@@ -5,7 +5,6 @@ package com.hanium.emoji_pot.domain.Member.service;
 import com.hanium.emoji_pot.domain.Member.Member;
 import com.hanium.emoji_pot.domain.Member.dto.UserDto;
 import com.hanium.emoji_pot.domain.Member.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,16 +16,14 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.util.Collections;
-import java.util.Optional;
 
 
 @RequiredArgsConstructor
 @Service
 @Transactional
-@AllArgsConstructor
 public class UserService implements UserDetailsService {
-    private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     //중복회원 체크
     public boolean joinCheck(UserDto userDto) {

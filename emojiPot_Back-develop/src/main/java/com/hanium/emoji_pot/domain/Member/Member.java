@@ -50,8 +50,9 @@ public class Member {
     private Integer is_deleted;
 
     @Builder
-    public Member(String name, String username, String email, String password, String profile_image,
+    public Member(Long user_id, String name, String username, String email, String password, String profile_image,
                   String introduce, Date created_at, Date updated_at, Integer is_deleted) {
+        this.user_id= user_id;
         this.name = name;
         this.username = username;
         this.email = email;
