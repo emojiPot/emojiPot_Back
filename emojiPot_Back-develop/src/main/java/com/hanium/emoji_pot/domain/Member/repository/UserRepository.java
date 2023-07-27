@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<Member,Long> {
 
     //null 값 방지 위해 Optional 사용
-    Optional<Member> findByEmail(String email);
+    Member findByEmail(String email);
 
     List<Member> findAll();
 

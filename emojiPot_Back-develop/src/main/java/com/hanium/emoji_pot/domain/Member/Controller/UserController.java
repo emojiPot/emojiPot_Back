@@ -3,9 +3,11 @@ package com.hanium.emoji_pot.domain.Member.Controller;
 import com.hanium.emoji_pot.domain.Member.Member;
 import com.hanium.emoji_pot.domain.Member.dto.UserDto;
 import com.hanium.emoji_pot.domain.Member.dto.UserUpdateDto;
+import com.hanium.emoji_pot.domain.Member.repository.UserRepository;
 import com.hanium.emoji_pot.domain.Member.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
@@ -26,39 +28,39 @@ public class UserController {
     }
 
     //client -> 컨트롤러에서 Dto 로 받은 후 service 로 전달
-    //회원가입 페이지 출력 요청
-    @GetMapping("/v1/user/register")
-    public String saveForm(@ModelAttribute UserDto userDto){
-        return "/user/signupForm";
-    }
+
 
     //회원가입 요청 처리
     @PostMapping("/v1/user/register")
-    public String save(@RequestBody  UserDto userDto) throws ParseException {
-        System.out.println("MemberController.save");
-        System.out.println("memberDTO = "+ userDto);
+    public String save(@RequestBody UserDto userDto) throws ParseException {
         userService.signup(userDto);
         return "회원가입 성공";
     }
 
     //회원정보 수정
+    //유저 정보 가져오기
+    @GetMapping("/v1/user/{user_id}")
+    public void BasicInfo(@RequestBody UserUpdateDto userUpdateDto) throws  Exception{
+
+    }
+
     @PutMapping("/v1/user/{user_id}")
-    public void updateBasicInfo(@RequestBody UserUpdateDto userUpdateDto) throws  Exception{
-        userUpdateDto.update(userUpdateDto);
+    public void updateBasicInfo(@PathVariable Long id ,@RequestBody UserUpdateDto userUpdateDto){
+
+
     }
 
     //비밀번호 수정
 
-    //로그인 페이지 출력
-    @GetMapping("/v1/user/login")
-    public String loginForm() {
-        return "/user/loginForm";
-    }
 
-    /*
+
+    //회원정보보기
+
+
+
     //로그인 요청처리
     @PostMapping("/v1/user/login")
-    public String login(@RequestParam UserDto userDto, HttpSession session) throws Exception {
+    public String login(@RequestBody UserDto userDto, HttpSession session) throws Exception {
         Member authenticatedMember = userService.login(userDto);
         if (authenticatedMember != null) {
             // 로그인 성공시 세션에 사용자 정보 저장
@@ -69,11 +71,12 @@ public class UserController {
             return "redirect:/v1/user/login";
         }
     }
+
     //로그아웃
     @GetMapping("/v1/user/logout")
     public String logout(HttpSession session) {
         // 세션에서 사용자 정보 삭제
         session.removeAttribute("authenticatedUser");
         return "redirect:/"; // 로그아웃 후 이동할 페이지
-    } */
+    }
 }

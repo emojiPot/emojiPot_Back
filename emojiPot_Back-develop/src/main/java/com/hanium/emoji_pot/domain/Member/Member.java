@@ -62,6 +62,4 @@ public class Member {
         this.updated_at = updated_at;
         this.is_deleted = is_deleted;
     }
-
-
 }

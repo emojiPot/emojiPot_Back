@@ -30,11 +30,11 @@ public class UserService implements UserDetailsService {
 
     //중복회원 체크
     public boolean joinCheck(UserDto userDto) {
-        Optional<Member> findMember = userRepository.findByEmail(userDto.getEmail());
-        if(findMember == null){
-            return true;
-        }else{
+        Member findMember = userRepository.findByEmail(userDto.getEmail());
+        if(findMember != null){
             return false;
+        }else{
+            return true;
         }
     }
 
@@ -51,7 +51,8 @@ public class UserService implements UserDetailsService {
         }
     }
 
-   /*
+
+    //로그인
     public Member login(UserDto userDto) throws  Exception{
         Member findMember = userRepository.findByEmail(userDto.getEmail());
         if (findMember != null) {
@@ -61,7 +62,7 @@ public class UserService implements UserDetailsService {
             }
         }
         throw new RuntimeException("인증에 실패했습니다. 올바른 이메일과 비밀번호를 입력해주세요."); // 인증 실패
-    } */
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -77,5 +78,6 @@ public class UserService implements UserDetailsService {
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
     }
+
 }
 

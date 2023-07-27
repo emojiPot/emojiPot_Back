@@ -66,5 +66,4 @@ public class UserDto {
                 .is_deleted(is_deleted)
                 .build();
     }
-
 }
