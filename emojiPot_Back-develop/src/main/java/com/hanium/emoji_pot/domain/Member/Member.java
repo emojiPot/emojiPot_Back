@@ -10,6 +10,7 @@ import java.util.Date;
 //Security 의 내부적으로 사용하는 클래스의 이름이 User 이므로
 //Accout 나 Member 라는 이름 사용해서 구현해야함 .
 //데이터베이스와 매핑될 엔티티클래스 작성
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
