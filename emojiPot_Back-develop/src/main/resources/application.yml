@@ -10,6 +10,7 @@ spring:
 
   jpa:
     database: mysql
+    open-in-view: false
     generate-ddl: true
     show-sql: true
     properties:
