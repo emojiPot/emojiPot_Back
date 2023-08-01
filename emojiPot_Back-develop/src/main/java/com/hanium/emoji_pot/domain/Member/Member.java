@@ -1,6 +1,7 @@
 package com.hanium.emoji_pot.domain.Member;
 
 
+import com.hanium.emoji_pot.domain.MemberRole;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -40,20 +41,24 @@ public class Member {
     private String introduce;
 
     @CreationTimestamp
-    @Column(nullable = false)
+    @Column
     private Date created_at;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
     @Column
     private Date updated_at;
 
     @Column
     private Integer is_deleted;
 
+
+    @Column
+    private String role;
+
     @Builder
     public Member(Long user_id, String name, String username, String email, String password, String profile_image,
-                  String introduce, Date created_at, Date updated_at, Integer is_deleted) {
-        this.user_id= user_id;
+                  String introduce, Date created_at, Date updated_at, Integer is_deleted, String role) {
+        this.user_id = user_id;
         this.name = name;
         this.username = username;
         this.email = email;
@@ -63,5 +68,6 @@ public class Member {
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.is_deleted = is_deleted;
+        this.role = role;
     }
 }

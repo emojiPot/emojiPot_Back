@@ -5,6 +5,7 @@ import com.hanium.emoji_pot.domain.Member.dto.UserDto;
 import com.hanium.emoji_pot.domain.Member.dto.UserUpdateDto;
 import com.hanium.emoji_pot.domain.Member.repository.UserRepository;
 import com.hanium.emoji_pot.domain.Member.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 
 
 @Controller
@@ -27,9 +29,8 @@ public class UserController {
         this.sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 
-    //client -> 컨트롤러에서 Dto 로 받은 후 service 로 전달
 
-
+    @Operation(summary = "회원가입")
     //회원가입 요청 처리
     @PostMapping("/v1/user/register")
     public String save(@RequestBody UserDto userDto) throws ParseException {
@@ -37,8 +38,28 @@ public class UserController {
         return "회원가입 성공";
     }
 
+
+
+    //로그인
+    // 스프링 시큐리티가 해당 주소를 낚아챈다.
+    @GetMapping("/v1/user/login")
+    public String login(){
+        return "login";
+    }
+
+    //비밀번호 수정
+
+
+
+    //회원정보보기
+
+
+
     //회원정보 수정
+
+
     //유저 정보 가져오기
+    @Operation(summary = "회원정보 수정")
     @GetMapping("/v1/user/{user_id}")
     public void BasicInfo(@RequestBody UserUpdateDto userUpdateDto) throws  Exception{
 
@@ -50,33 +71,7 @@ public class UserController {
 
     }
 
-    //비밀번호 수정
 
 
 
-    //회원정보보기
-
-
-
-    //로그인 요청처리
-    @PostMapping("/v1/user/login")
-    public String login(@RequestBody UserDto userDto, HttpSession session) throws Exception {
-        Member authenticatedMember = userService.login(userDto);
-        if (authenticatedMember != null) {
-            // 로그인 성공시 세션에 사용자 정보 저장
-            session.setAttribute("authenticatedUser", authenticatedMember);
-            return "redirect:/"; // 로그인 성공시 이동할 페이지
-        } else {
-            // 로그인 실패시 로그인 페이지로 다시 이동
-            return "redirect:/v1/user/login";
-        }
-    }
-
-    //로그아웃
-    @GetMapping("/v1/user/logout")
-    public String logout(HttpSession session) {
-        // 세션에서 사용자 정보 삭제
-        session.removeAttribute("authenticatedUser");
-        return "redirect:/"; // 로그아웃 후 이동할 페이지
-    }
 }

@@ -29,13 +29,22 @@ public class UserDto {
 
     private String profile_image;
     private String introduce;
+
+    @NotNull
     private String created_at;
+
+    @NotNull
     private String updated_at;
+
+    @NotNull
     private Integer is_deleted;
+
+
+    private String role;
 
     @Builder
     public UserDto(String name, String username, String email, String password,
-                   String profile_image, String introduce, String created_at, String updated_at, Integer is_deleted) {
+                   String profile_image, String introduce, String created_at, String updated_at, Integer is_deleted, String role) {
         this.name = name;
         this.username = username;
         this.email = email;
@@ -45,23 +54,17 @@ public class UserDto {
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.is_deleted = is_deleted;
+        this.role = role;
     }
 
 
-    public Member toEntity() throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date createdAt =  sdf.parse(created_at);
-        Date updateAt = sdf.parse(updated_at);
 
+    public Member toEntity() throws ParseException {
         return Member.builder()
                 .name(name)
                 .username(username)
                 .email(email)
                 .password(password)
-                .profile_image(profile_image)
-                .introduce(introduce)
-                .created_at(createdAt)
-                .updated_at(updateAt)
                 .is_deleted(is_deleted)
                 .build();
     }

@@ -1,23 +1,23 @@
-profiles:
-  default: local
-
 spring:
+  jpa:
+    open-in-view: false
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://emoji-pot.ctghw7cf2efu.ap-southeast-2.rds.amazonaws.com:3306/emoji_pot?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://emoji-pot.c4abq8qcrqz9.ap-southeast-2.rds.amazonaws.com:3306/emoji_pot?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: emojipot
     password: emoji123
 
-  jpa:
-    database: mysql
-    open-in-view: false
-    generate-ddl: true
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        use_sql_comments: true
-        jdbc:
-          time_zone: Asia/Seoul
-    hibernate:
-      ddl-auto: update
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    groups-order: DESC
+    operationsSorter: method
+    disable-swagger-default-url: true
+    display-request-duration: true
+  api-docs:
+    path: /api-docs
+  show-actuator: true
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  paths-to-match:
+    - /v1/**

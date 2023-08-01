@@ -21,6 +21,7 @@ public class UserUpdateDto {
         this.is_deleted = is_deleted;
     }
     public void update(UserUpdateDto userUpdateDto) {
+
     }
 
     public Member toEntity(){
