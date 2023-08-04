@@ -1,4 +1,4 @@
-package com.hanium.emoji_pot.config;
+package com.hanium.emoji_pot.global.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
