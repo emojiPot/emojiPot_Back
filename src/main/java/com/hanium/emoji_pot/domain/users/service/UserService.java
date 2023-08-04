@@ -17,7 +17,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder encoder;
-    
+
+    @Value("${jwt.token.secret}")
+    private String secretKey;
+    private long expireTime = 1000 * 60 * 60; // 만료시간 1시간(ms단위)
 
     public User register(User user) {
         userRepository.findByUsernameAndIsDeleted(user.getUsername(), user.getIsDeleted())
@@ -29,5 +32,24 @@ public class UserService {
         return user;
     }
 
+    public User findUserEntity(String email) {
+        return userRepository.findByEmailAndIsDeleted(email, false)
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmailAndIsDeleted(email, false)
+                .orElseThrow(() -> new ErrorController(ErrorCode.USER_NOT_FOUNDED, ""));
+    }
+
+
+    public String login(String email, String password) {
+        User user = userRepository.findByEmailAndIsDeleted(email, false)
+                .orElseThrow(() -> new ErrorController(ErrorCode.USER_NOT_FOUNDED, String.format("존재하지 않는 이메일입니다.", email)));
+        if(!encoder.matches(password,user.getPassword())){
+            throw new ErrorController(ErrorCode.INVALID_PASSWORD, String.format("비밀번호를 잘못 입력하였습니다."));
+        }
+        return JwtTokenUtil.createToken(email, secretKey, expireTime);
+    }
 
 }

@@ -28,4 +28,11 @@ public class UserController {
         User register = userService.register(registerRequest.toEntity(encoder.encode(registerRequest.getPassword())));
         return UserRegisterResponseDto.of(register);
     }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public UserLoginResponseDto login(@Validated @RequestBody UserLoginRequestDto loginRequest) {
+        String token = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+        return new UserLoginResponseDto(token);
+    }
 }
