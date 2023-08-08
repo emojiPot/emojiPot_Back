@@ -1,4 +1,4 @@
-package com.hanium.emoji_pot.global.error;
+package com.hanium.emoji_pot.global.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
