@@ -3,16 +3,28 @@ package com.hanium.emoji_pot.domain.users.service;
 import com.hanium.emoji_pot.domain.security.JwtTokenUtil;
 import com.hanium.emoji_pot.domain.users.User;
 import com.hanium.emoji_pot.domain.users.UserRepository;
-import com.hanium.emoji_pot.global.error.ErrorCode;
-import com.hanium.emoji_pot.global.error.ErrorController;
+import com.hanium.emoji_pot.domain.users.UserRole;
+import com.hanium.emoji_pot.domain.users.dto.UserLoginRequestDto;
+import com.hanium.emoji_pot.domain.users.dto.UserLoginResponseDto;
+import com.hanium.emoji_pot.domain.users.dto.UserRegisterRequestDto;
+import com.hanium.emoji_pot.domain.users.dto.UserRegisterResponseDto;
+import com.hanium.emoji_pot.global.exception.AppException;
+import com.hanium.emoji_pot.global.exception.ErrorCode;
+import com.hanium.emoji_pot.global.exception.ErrorController;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.webjars.NotFoundException;
+
+import java.sql.SQLException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -20,36 +32,65 @@ public class UserService {
 
     @Value("${jwt.token.secret}")
     private String secretKey;
-    private long expireTime = 1000 * 60 * 60; // 만료시간 1시간(ms단위)
 
-    public User register(User user) {
-        userRepository.findByUsernameAndIsDeleted(user.getUsername(), user.getIsDeleted())
-                .ifPresent( user1 -> {
-                    throw new ErrorController(ErrorCode.DUPLICATED_USER_NAME, String.format("Username : %s",user1.getUsername()));
-                });
-        userRepository.save(user);
+    // 회원가입
+    @Transactional
+    public UserRegisterResponseDto register(UserRegisterRequestDto registerRequest) throws SQLException {
 
-        return user;
+        String requestUserEmail = registerRequest.getEmail();
+
+        userJoinValid(requestUserEmail);
+
+        String encodedPassword = encoder.encode(registerRequest.getPassword());
+
+        User saved = userRepository.save(User.createUser(registerRequest, encodedPassword));
+
+        return new UserRegisterResponseDto(saved);
     }
 
-    public User findUserEntity(String email) {
+    public void userJoinValid(String email) {
+        userRepository.findByEmailAndIsDeleted(email, false)
+                .ifPresent(user -> {throw new AppException(ErrorCode.DUPLICATED_USER_NAME);});
+
+    }
+
+    public User userValid(String email) {
         return userRepository.findByEmailAndIsDeleted(email, false)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public User getUserByEmail(String email) {
+    // 사용자 권한 변경
+    @Transactional
+    public void changeRole(Long userId) {
+        User found = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        log.info("{}", found);
+
+        found.changeRole();
+    }
+
+    public UserRole findRoleByUserName(String userName) {
+        User foundUser = userValid(userName);
+        return foundUser.getRole();
+    }
+
+    public User findUserByEmail(String email) {
         return userRepository.findByEmailAndIsDeleted(email, false)
-                .orElseThrow(() -> new ErrorController(ErrorCode.USER_NOT_FOUNDED, ""));
+                .orElseThrow(() -> new ErrorController(ErrorCode.USER_NOT_FOUND, ""));
     }
 
+    // 로그인
+    public UserLoginResponseDto login(UserLoginRequestDto loginRequest) throws SQLException {
+        String requestEmail = loginRequest.getEmail();
+        String requestPassword = loginRequest.getPassword();
 
-    public String login(String email, String password) {
-        User user = userRepository.findByEmailAndIsDeleted(email, false)
-                .orElseThrow(() -> new ErrorController(ErrorCode.USER_NOT_FOUNDED, String.format("존재하지 않는 이메일입니다.", email)));
-        if(!encoder.matches(password,user.getPassword())){
-            throw new ErrorController(ErrorCode.INVALID_PASSWORD, String.format("비밀번호를 잘못 입력하였습니다."));
+        User found = userValid(requestEmail);
+
+        if (!encoder.matches(requestPassword, found.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_PASSWORD, "잘못된 비밀번호 입니다");
         }
-        return JwtTokenUtil.createToken(email, secretKey, expireTime);
-    }
 
+        return new UserLoginResponseDto(JwtTokenUtil.createToken(requestEmail, found.getUserId(), secretKey));
+    }
 }
