@@ -4,28 +4,22 @@ import com.hanium.emoji_pot.domain.BaseTimeEntity;
 import com.hanium.emoji_pot.domain.posts.dto.PostRequestDto;
 import com.hanium.emoji_pot.domain.posts.dto.PostUpdateRequestDto;
 import com.hanium.emoji_pot.domain.users.User;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Table(name = "post")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Post extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
 
     @Column(length = 30)
     private String location;
@@ -37,24 +31,36 @@ public class Post extends BaseTimeEntity {
     private String record;
 
     @Column(nullable = false)
-    private boolean isDeleted;
+    private Boolean isDeleted;
 
-    @Builder
-    public Post(User user, String location, Integer emotion, String record) {
-        this.user = user;
+    @Column(nullable = false)
+    private Boolean isOpened;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+
+    public Post(String location, Integer emotion, String record, User user) {
         this.location = location;
         this.emotion = emotion;
         this.record = record;
         this.isDeleted = false;
+        this.isOpened = true;
+        this.user = user;
     }
 
-    public void deletePost() {
-        this.isDeleted = true;
+    public static Post createPost(PostRequestDto postRequest, User user) {
+        return new Post(postRequest.getLocation(), postRequest.getEmotion(), postRequest.getRecord(), user);
     }
 
     public void updatePost(PostUpdateRequestDto postUpdateRequestDto) {
         this.location = postUpdateRequestDto.getLocation();
         this.emotion = postUpdateRequestDto.getEmotion();
         this.record = postUpdateRequestDto.getRecord();
+    }
+
+    public void deletePost() {
+        this.isDeleted = true;
     }
 }
