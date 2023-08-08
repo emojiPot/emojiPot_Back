@@ -6,60 +6,40 @@ import com.hanium.emoji_pot.domain.posts.dto.PostRequestDto;
 import com.hanium.emoji_pot.domain.posts.dto.PostResponseDto;
 import com.hanium.emoji_pot.domain.posts.dto.PostUpdateRequestDto;
 import com.hanium.emoji_pot.domain.users.User;
-import com.hanium.emoji_pot.domain.users.service.UserService;
+import com.hanium.emoji_pot.domain.users.UserRepository;
+import com.hanium.emoji_pot.domain.users.UserRole;
+import com.hanium.emoji_pot.global.exception.AppException;
+import com.hanium.emoji_pot.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.sql.SQLException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public PostResponseDto savePost(PostRequestDto postRequest) {
-        User user = userService.findUserEntity(postRequest.getUserId());
-        Post entity = postRepository.save(postRequest.toEntity(user));
-        return PostResponseDto.of(entity);
+    public Post postValid(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+
+        if (post.getIsDeleted() == true) {
+            throw new AppException(ErrorCode.POST_NOT_FOUND);
+        }
+        return post;
     }
 
-    public Post findEntity(Long postId) {
-        return postRepository.findByPostIdAndIsDeleted(postId, false)
-                .orElseThrow(() -> new NotFoundException("게시물을 찾을 수 없습니다."));
+    public void checkAuth(String requestEmail, String author, UserRole requestUserRole) {
+        if (!requestUserRole.equals(UserRole.ROLE_ADMIN) && !author.equals(requestEmail)) {
+            throw new AppException(ErrorCode.USER_NOT_MATCH);
+        }
     }
 
-    @Transactional
-    public PostResponseDto updatePost(Long postId, PostUpdateRequestDto postUpdateRequest) {
-        Post entity = findEntity(postId);
-        entity.updatePost(postUpdateRequest);
-        return PostResponseDto.of(entity);
-    }
-
-    @Transactional
-    public void deletePost(Long postId) {
-        findEntity(postId).deletePost();
-    }
-
-    public PostResponseDto findByPostId(Long postId) {
-        return PostResponseDto.of(findEntity(postId));
-    }
-
-    public List<PostResponseDto> findAll() {
-        return postRepository.findAllByIsDeleted(false)
-                .stream()
-                .map(PostResponseDto::of)
-                .collect(Collectors.toList());
-    }
-
-    public List<PostResponseDto> findAllByLocation(String location) {
-        return postRepository.findAllByLocationAndIsDeleted(location, false)
-                .stream()
-                .map(PostResponseDto::of)
-                .collect(Collectors.toList());
-    }
 }
