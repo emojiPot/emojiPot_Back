@@ -1,11 +1,11 @@
 package com.hanium.emoji_pot.domain.users.dto;
 
 import com.hanium.emoji_pot.domain.users.User;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Builder
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public class UserRegisterResponseDto {
 
     private String name;
@@ -14,13 +14,10 @@ public class UserRegisterResponseDto {
 
     private String email;
 
-    public static UserRegisterResponseDto of (User entity) {
-        return UserRegisterResponseDto.builder()
-                .name(entity.getName())
-                .username(entity.getUsername())
-                .email(entity.getEmail())
-                .build();
+    public UserRegisterResponseDto (User user) {
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.username = user.getUsername();
     }
-
 
 }
