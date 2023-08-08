@@ -4,10 +4,7 @@ import com.hanium.emoji_pot.domain.security.JwtTokenUtil;
 import com.hanium.emoji_pot.domain.users.User;
 import com.hanium.emoji_pot.domain.users.UserRepository;
 import com.hanium.emoji_pot.domain.users.UserRole;
-import com.hanium.emoji_pot.domain.users.dto.UserLoginRequestDto;
-import com.hanium.emoji_pot.domain.users.dto.UserLoginResponseDto;
-import com.hanium.emoji_pot.domain.users.dto.UserRegisterRequestDto;
-import com.hanium.emoji_pot.domain.users.dto.UserRegisterResponseDto;
+import com.hanium.emoji_pot.domain.users.dto.*;
 import com.hanium.emoji_pot.global.exception.AppException;
 import com.hanium.emoji_pot.global.exception.ErrorCode;
 import com.hanium.emoji_pot.global.exception.ErrorController;
@@ -92,5 +89,17 @@ public class UserService {
         }
 
         return new UserLoginResponseDto(JwtTokenUtil.createToken(requestEmail, found.getUserId(), secretKey));
+    }
+
+    // 사용자 상세 조회
+    public UserDetailDto getUser(String username) throws SQLException {
+        User user = findUserByUsername(username);
+
+        return new UserDetailDto(user);
+    }
+
+    public User findUserByUsername(String username) {
+        return userRepository.findByUsernameAndIsDeleted(username, false)
+                .orElseThrow(() -> new ErrorController(ErrorCode.USER_NOT_FOUND, ""));
     }
 }

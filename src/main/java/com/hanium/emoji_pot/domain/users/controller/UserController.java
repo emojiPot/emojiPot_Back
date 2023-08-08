@@ -32,7 +32,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity register(@Validated @RequestBody UserRegisterRequestDto registerRequest, BindingResult br) throws SQLException {
-        log.info("🎉 회원 가입 요청 requestDto : {}", registerRequest);
+        log.info("회원 가입 요청 requestDto : {}", registerRequest);
 
         if (br.hasErrors()) {
             ExceptionManager.ifNullAndBlank();
@@ -45,7 +45,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity login(@Validated @RequestBody UserLoginRequestDto loginRequest, BindingResult br, HttpServletRequest request) throws SQLException {
-        log.info("🎉 로그인 요청 requestDto : {}", loginRequest);
+        log.info("로그인 요청 requestDto : {}", loginRequest);
 
         if (br.hasErrors()) {
             ExceptionManager.ifNullAndBlank();
@@ -59,14 +59,11 @@ public class UserController {
         return ResponseEntity.ok(Response.success(loginResponse));
     }
 
-//    @PostMapping("/{user_id}/role/change")
-//    public ResponseEntity changeRole(@PathVariable(name = "user_id") Long userId) {
-//        log.info("🎉 관리자가 등급을 변경할 회원 id : {} ", userId);
-//
-//        userService.changeRole(userId);
-//
-//        UserRoleChangeResponseDto responseDto = new UserRoleChangeResponseDto(userId, userId + "번 아이디의 권한을 변경하였습니다.");
-//
-//        return ResponseEntity.ok(Response.success(responseDto));
-//    }
+    @GetMapping("/info/{username}")
+    public Response userInfo(@PathVariable("username") String username) throws SQLException {
+        log.info("조회할 사용자 닉네임 : {}", username);
+
+        return Response.success(userService.getUser(username));
+    }
+
 }
