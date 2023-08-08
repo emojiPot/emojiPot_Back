@@ -26,6 +26,21 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
+    // 게시글 작성
+    @Transactional
+    public PostResponseDto savePost(PostRequestDto requestDto, String requestEmail) throws SQLException {
+        User requestUser = userValid(requestEmail);
+        Post post = Post.createPost(requestDto, requestUser);
+        return new PostResponseDto(postRepository.save(post));
+
+    }
+
+    // 게시글 목록 조회
+    public User userValid(String email) {
+        return userRepository.findByEmailAndIsDeleted(email, false)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    }
+
     public Post postValid(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
