@@ -45,4 +45,22 @@ public class PostController {
         return ResponseEntity.ok(Response.success(postResponse));
     }
 
+    @PatchMapping("/{postId}")
+    public ResponseEntity modify(@PathVariable("postId") Long postId, @Validated @RequestBody PostUpdateRequestDto postUpdateRequest, BindingResult br, Authentication authentication) throws SQLException {
+        log.info("📝수정하려는 게시글 id : {} || requestDto : {}", postId, postUpdateRequest);
+
+        if (br.hasErrors()) {
+            ExceptionManager.ifNullAndBlank();
+        }
+
+        String requestUserEmail = authentication.getName();
+        log.info("📝게시글 수정 요청자 email : {}", requestUserEmail);
+
+        postService.updatePost(postUpdateRequest, postId, requestUserEmail);
+        PostUpdateResponseDto postUpdateResponse = new PostUpdateResponseDto(postId);
+
+        return ResponseEntity.ok(Response.success(postUpdateResponse));
+
+    }
+
 }
