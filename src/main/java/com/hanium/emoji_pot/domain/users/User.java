@@ -2,6 +2,7 @@ package com.hanium.emoji_pot.domain.users;
 
 import com.hanium.emoji_pot.domain.BaseTimeEntity;
 import com.hanium.emoji_pot.domain.posts.Post;
+import com.hanium.emoji_pot.domain.users.dto.UserModifyRequestDto;
 import com.hanium.emoji_pot.domain.users.dto.UserRegisterRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -65,6 +66,12 @@ public class User extends BaseTimeEntity {
         } else {
             this.role = UserRole.ROLE_USER;
         }
+    }
+
+    public void modifyUser(UserModifyRequestDto userModifyRequest) {
+        this.username = userModifyRequest.getUsername();
+        this.profileImage = userModifyRequest.getProfileImage();
+        this.introduce = userModifyRequest.getIntroduce();
     }
 
 }

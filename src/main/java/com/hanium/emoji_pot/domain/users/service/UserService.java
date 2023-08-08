@@ -94,12 +94,24 @@ public class UserService {
     // 사용자 상세 조회
     public UserDetailDto getUser(String username) throws SQLException {
         User user = findUserByUsername(username);
-
         return new UserDetailDto(user);
     }
 
     public User findUserByUsername(String username) {
         return userRepository.findByUsernameAndIsDeleted(username, false)
+                .orElseThrow(() -> new ErrorController(ErrorCode.USER_NOT_FOUND, ""));
+    }
+
+    // 사용자 정보 변경
+    @Transactional
+    public void modifyUser(UserModifyRequestDto userModifyRequest, Long userId) {
+        User user = findUserById(userId);
+
+        user.modifyUser(userModifyRequest);
+    }
+
+    public User findUserById(Long userId) {
+        return userRepository.findByUserIdAndIsDeleted(userId, false)
                 .orElseThrow(() -> new ErrorController(ErrorCode.USER_NOT_FOUND, ""));
     }
 }

@@ -1,10 +1,7 @@
 package com.hanium.emoji_pot.domain.users.controller;
 
 import com.hanium.emoji_pot.domain.users.User;
-import com.hanium.emoji_pot.domain.users.dto.UserLoginRequestDto;
-import com.hanium.emoji_pot.domain.users.dto.UserLoginResponseDto;
-import com.hanium.emoji_pot.domain.users.dto.UserRegisterRequestDto;
-import com.hanium.emoji_pot.domain.users.dto.UserRegisterResponseDto;
+import com.hanium.emoji_pot.domain.users.dto.*;
 import com.hanium.emoji_pot.domain.users.service.UserService;
 import com.hanium.emoji_pot.global.exception.ExceptionManager;
 import com.hanium.emoji_pot.global.exception.Response;
@@ -19,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.sql.SQLException;
 
 @RestController
@@ -66,4 +64,15 @@ public class UserController {
         return Response.success(userService.getUser(username));
     }
 
+    @PatchMapping("/modify/{userId}")
+    public ResponseEntity modifyUser(@PathVariable("userId") Long userId, @Validated @RequestBody UserModifyRequestDto userModifyRequest) throws SQLException {
+        User user = userService.findUserById(userId);
+        String requestUsername = user.getUsername();
+        log.info("사용자 정보 수정 요청자 닉네임 : {}",requestUsername);
+
+        userService.modifyUser(userModifyRequest, userId);
+        UserModifyResponseDto userModifyResponse = new UserModifyResponseDto(user);
+
+        return ResponseEntity.ok(Response.success(userModifyResponse));
+    }
 }
