@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .cors().and()
                 .authorizeRequests()
-                .antMatchers("v1/users/register", "/api/v1/users/login").permitAll()
+                .antMatchers("v1/users/register", "v1/users/login").permitAll()
                 .antMatchers(HttpMethod.POST, "v1/**").authenticated()
                 .and()
                 .sessionManagement()
