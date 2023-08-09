@@ -7,7 +7,6 @@ import com.hanium.emoji_pot.global.exception.ExceptionManager;
 import com.hanium.emoji_pot.global.exception.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
@@ -74,5 +73,12 @@ public class UserController {
         UserModifyResponseDto userModifyResponse = new UserModifyResponseDto(user);
 
         return ResponseEntity.ok(Response.success(userModifyResponse));
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        session.removeAttribute("email");
+        return "로그아웃 성공";
     }
 }
