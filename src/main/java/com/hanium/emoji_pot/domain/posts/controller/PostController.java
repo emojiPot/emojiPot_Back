@@ -1,9 +1,6 @@
 package com.hanium.emoji_pot.domain.posts.controller;
 
-import com.hanium.emoji_pot.domain.posts.dto.PostRequestDto;
-import com.hanium.emoji_pot.domain.posts.dto.PostResponseDto;
-import com.hanium.emoji_pot.domain.posts.dto.PostUpdateRequestDto;
-import com.hanium.emoji_pot.domain.posts.dto.PostUpdateResponseDto;
+import com.hanium.emoji_pot.domain.posts.dto.*;
 import com.hanium.emoji_pot.domain.posts.service.PostService;
 import com.hanium.emoji_pot.domain.users.service.UserService;
 import com.hanium.emoji_pot.global.exception.ExceptionManager;
@@ -32,7 +29,7 @@ public class PostController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity savePost(@Validated @RequestBody PostRequestDto postRequest, BindingResult br, Authentication authentication) throws SQLException {
-        log.info("📝게시글 작성 requestDto : {}", postRequest);
+        log.info("게시글 작성 requestDto : {}", postRequest);
 
         if (br.hasErrors()) {
             ExceptionManager.ifNullAndBlank();
@@ -47,20 +44,32 @@ public class PostController {
 
     @PatchMapping("/{postId}")
     public ResponseEntity modify(@PathVariable("postId") Long postId, @Validated @RequestBody PostUpdateRequestDto postUpdateRequest, BindingResult br, Authentication authentication) throws SQLException {
-        log.info("📝수정하려는 게시글 id : {} || requestDto : {}", postId, postUpdateRequest);
+        log.info("수정하려는 게시글 id : {} || requestDto : {}", postId, postUpdateRequest);
 
         if (br.hasErrors()) {
             ExceptionManager.ifNullAndBlank();
         }
 
         String requestUserEmail = authentication.getName();
-        log.info("📝게시글 수정 요청자 email : {}", requestUserEmail);
+        log.info("게시글 수정 요청자 email : {}", requestUserEmail);
 
         postService.updatePost(postUpdateRequest, postId, requestUserEmail);
         PostUpdateResponseDto postUpdateResponse = new PostUpdateResponseDto(postId);
 
         return ResponseEntity.ok(Response.success(postUpdateResponse));
+    }
 
+    @DeleteMapping("/{postId}")
+    public Response delete(@PathVariable(name = "postId") Long postId, Authentication authentication) throws SQLException {
+
+        String requestUserEmail = authentication.getName();
+        log.info("삭제 하려는 게시글 id : {} || 삭제 요청자 : {}", postId, requestUserEmail);
+
+        postService.deletePost(postId, requestUserEmail);
+
+        PostDeleteResponseDto postDeleteResponse = new PostDeleteResponseDto(postId);
+
+        return Response.success(postDeleteResponse);
     }
 
 }

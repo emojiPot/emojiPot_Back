@@ -32,13 +32,11 @@ public class PostService {
         User requestUser = userValid(requestEmail);
         Post post = Post.createPost(requestDto, requestUser);
         return new PostResponseDto(postRepository.save(post));
-
     }
 
     // 게시글 수정
     @Transactional
     public void updatePost(PostUpdateRequestDto postUpdateRequest, Long postId, String requestEmail) throws SQLException {
-
         User requestUser = userValid(requestEmail);
         Post post = postValid(postId);
 
@@ -51,15 +49,28 @@ public class PostService {
         post.updatePost(postUpdateRequest);
     }
 
-    // 게시글 목록 조회
+    // 게시글 삭제
+    @Transactional
+    public void deletePost(Long postId, String requestEmail) throws SQLException {
+        User requestUser = userValid(requestEmail);
+        Post post = postValid(postId);
+
+        UserRole requestUserRole = requestUser.getRole();
+        String author = post.getUser().getEmail();
+
+        log.info("게시글 수정 요청자 ROLE = {} 게시글 작성자 author = {}", requestUserRole, author);
+
+        checkAuth(requestEmail, author, requestUserRole);
+        postRepository.delete(post);
+
+    }
+
     public User userValid(String email) {
-        return userRepository.findByEmailAndIsDeleted(email, false)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userRepository.findByEmailAndIsDeleted(email, false).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     public Post postValid(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
 
         if (post.getIsDeleted() == true) {
             throw new AppException(ErrorCode.POST_NOT_FOUND);
