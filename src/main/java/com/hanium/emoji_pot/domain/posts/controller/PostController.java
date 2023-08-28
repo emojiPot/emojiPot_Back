@@ -24,7 +24,6 @@ import java.sql.SQLException;
 public class PostController {
 
     private final PostService postService;
-    private final UserService userService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -60,7 +59,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public Response delete(@PathVariable(name = "postId") Long postId, Authentication authentication) throws SQLException {
+    public Response delete(@PathVariable("postId") Long postId, Authentication authentication) throws SQLException {
 
         String requestUserEmail = authentication.getName();
         log.info("삭제 하려는 게시글 id : {} || 삭제 요청자 : {}", postId, requestUserEmail);
@@ -70,6 +69,13 @@ public class PostController {
         PostDeleteResponseDto postDeleteResponse = new PostDeleteResponseDto(postId);
 
         return Response.success(postDeleteResponse);
+    }
+
+    @GetMapping("/{postId}")
+    public Response getPost(@PathVariable("postId") Long postId) throws SQLException {
+        log.info("조회할 게시글 id : {}", postId);
+
+        return Response.success(postService.getPostById(postId));
     }
 
 }

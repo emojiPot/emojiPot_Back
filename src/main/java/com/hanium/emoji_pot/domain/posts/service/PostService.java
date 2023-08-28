@@ -2,6 +2,7 @@ package com.hanium.emoji_pot.domain.posts.service;
 
 import com.hanium.emoji_pot.domain.posts.Post;
 import com.hanium.emoji_pot.domain.posts.PostRepository;
+import com.hanium.emoji_pot.domain.posts.dto.PostDetailDto;
 import com.hanium.emoji_pot.domain.posts.dto.PostRequestDto;
 import com.hanium.emoji_pot.domain.posts.dto.PostResponseDto;
 import com.hanium.emoji_pot.domain.posts.dto.PostUpdateRequestDto;
@@ -61,9 +62,16 @@ public class PostService {
         log.info("게시글 수정 요청자 ROLE = {} 게시글 작성자 author = {}", requestUserRole, author);
 
         checkAuth(requestEmail, author, requestUserRole);
-        postRepository.delete(post);
-
+        post.deletePost();
     }
+
+    // 게시글 상세 조회
+    public PostDetailDto getPostById(Long postId) throws SQLException {
+        Post foundPost = postValid(postId);
+
+        return new PostDetailDto(foundPost);
+    }
+
 
     public User userValid(String email) {
         return userRepository.findByEmailAndIsDeleted(email, false).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));

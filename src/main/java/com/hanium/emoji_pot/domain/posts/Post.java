@@ -1,6 +1,7 @@
 package com.hanium.emoji_pot.domain.posts;
 
 import com.hanium.emoji_pot.domain.BaseTimeEntity;
+import com.hanium.emoji_pot.domain.likes.Like;
 import com.hanium.emoji_pot.domain.posts.dto.PostRequestDto;
 import com.hanium.emoji_pot.domain.posts.dto.PostUpdateRequestDto;
 import com.hanium.emoji_pot.domain.users.User;
@@ -10,6 +11,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -40,6 +43,8 @@ public class Post extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "post")
+    List<Like> likes = new ArrayList<>();
 
     public Post(String location, Integer emotion, String record, User user) {
         this.location = location;
