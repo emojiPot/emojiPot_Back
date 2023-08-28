@@ -4,6 +4,8 @@ import com.hanium.emoji_pot.domain.comments.Comment;
 import com.hanium.emoji_pot.domain.comments.CommentRepository;
 import com.hanium.emoji_pot.domain.comments.dto.CommentRequestDto;
 import com.hanium.emoji_pot.domain.comments.dto.CommentResponseDto;
+import com.hanium.emoji_pot.domain.comments.dto.ReplyCommentRequestDto;
+import com.hanium.emoji_pot.domain.comments.dto.ReplyCommentResponseDto;
 import com.hanium.emoji_pot.domain.posts.Post;
 import com.hanium.emoji_pot.domain.posts.PostRepository;
 import com.hanium.emoji_pot.domain.users.User;
@@ -36,6 +38,18 @@ public class CommentService {
         commentRepository.save(comment);
 
         return new CommentResponseDto(comment, requestUserEmail, postId);
+    }
+
+    @Transactional
+    public ReplyCommentResponseDto writeReplyComment(ReplyCommentRequestDto replyCommentRequest, String requestUserEmail, Long postId, Long parentCommentId) throws SQLException {
+        User user = userValid(requestUserEmail);
+        Post post = postValid(postId);
+        Comment parentComment = commentValid(parentCommentId);
+
+        Comment comment = Comment.createReplyComment(replyCommentRequest.getReplyContent(), user, post, parentComment);
+        commentRepository.save(comment);
+
+        return new ReplyCommentResponseDto(comment, requestUserEmail, postId, parentCommentId);
     }
 
     public User userValid(String email) {
