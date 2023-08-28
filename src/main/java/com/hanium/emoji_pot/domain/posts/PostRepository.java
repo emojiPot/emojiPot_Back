@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByPostIdAndIsDeleted(Long postId, Boolean isDeleted);
     List<Post> findAllByIsDeleted(Boolean isDeleted);
-    List<Post> findAllByLocationAndIsDeleted(String location, Boolean isDeleted);
+    List<Post> findAllByLocationAndIsDeletedOrderByUpdatedAtDesc(String location, Boolean isDeleted);
 }

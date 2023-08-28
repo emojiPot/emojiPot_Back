@@ -78,4 +78,9 @@ public class PostController {
         return Response.success(postService.getPostById(postId));
     }
 
+    @GetMapping("")
+    public Response searchByLocation(@RequestParam(value = "search") String location) throws SQLException {
+        return Response.success(postService.getPostByLocation(location));
+    }
+
 }

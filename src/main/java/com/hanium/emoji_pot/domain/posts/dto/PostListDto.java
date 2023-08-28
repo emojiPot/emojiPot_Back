@@ -6,17 +6,15 @@ import lombok.Getter;
 
 import java.text.SimpleDateFormat;
 
-@AllArgsConstructor
 @Getter
-public class PostDetailDto {
+@AllArgsConstructor
+public class PostListDto {
 
     private Long postId;
 
     private String username;
 
     private String location;
-
-    private Integer emotion;
 
     private String record;
 
@@ -26,11 +24,10 @@ public class PostDetailDto {
 
     private int likeNum;
 
-    public PostDetailDto(Post post) {
+    public PostListDto(Post post) {
         this.postId = post.getPostId();
         this.username = post.getUser().getUsername();
         this.location = post.getLocation();
-        this.emotion = post.getEmotion();
         this.record = post.getRecord();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         this.createdAt = sdf.format(post.getCreatedAt());

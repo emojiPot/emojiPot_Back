@@ -2,10 +2,7 @@ package com.hanium.emoji_pot.domain.posts.service;
 
 import com.hanium.emoji_pot.domain.posts.Post;
 import com.hanium.emoji_pot.domain.posts.PostRepository;
-import com.hanium.emoji_pot.domain.posts.dto.PostDetailDto;
-import com.hanium.emoji_pot.domain.posts.dto.PostRequestDto;
-import com.hanium.emoji_pot.domain.posts.dto.PostResponseDto;
-import com.hanium.emoji_pot.domain.posts.dto.PostUpdateRequestDto;
+import com.hanium.emoji_pot.domain.posts.dto.*;
 import com.hanium.emoji_pot.domain.users.User;
 import com.hanium.emoji_pot.domain.users.UserRepository;
 import com.hanium.emoji_pot.domain.users.UserRole;
@@ -17,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,6 +69,12 @@ public class PostService {
         Post foundPost = postValid(postId);
 
         return new PostDetailDto(foundPost);
+    }
+
+    // 게시글 장소로 검색
+    @Transactional
+    public List<PostListDto> getPostByLocation(String location) throws SQLException {
+        return postRepository.findAllByLocationAndIsDeletedOrderByUpdatedAtDesc(location, false).stream().map(PostListDto::new).collect(Collectors.toList());
     }
 
 
