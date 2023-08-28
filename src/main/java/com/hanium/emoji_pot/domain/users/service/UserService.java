@@ -104,10 +104,33 @@ public class UserService {
 
     // 사용자 정보 변경
     @Transactional
-    public void modifyUser(UserModifyRequestDto userModifyRequest, Long userId) {
+    public void modifyUser(UserModifyRequestDto userModifyRequest, Long userId, String requestUserEmail) throws SQLException {
         User user = findUserById(userId);
 
+        User requestUser = findUserByEmail(requestUserEmail);
+
+        requestValid(user, requestUser);
+
         user.modifyUser(userModifyRequest);
+    }
+
+    @Transactional
+    public void modifyPassword(UserPasswordModifyRequestDto password, Long userId, String requestUserEmail) throws SQLException {
+        User user = findUserById(userId);
+        User requestUser = findUserByEmail(requestUserEmail);
+
+        requestValid(user, requestUser);
+
+        String encodedPassword = encoder.encode(password.getPassword());
+
+        user.modifyPassword(encodedPassword);
+    }
+
+    public void requestValid(User modifyUser, User requestUser) throws SQLException {
+        Boolean valid = (modifyUser.getUserId() == requestUser.getUserId());
+        if (!valid) {
+            throw new AppException(ErrorCode.USER_NOT_MATCH, "요청자와 수정하려는 계정이 일치하지 않습니다.");
+        }
     }
 
     public User findUserById(Long userId) {

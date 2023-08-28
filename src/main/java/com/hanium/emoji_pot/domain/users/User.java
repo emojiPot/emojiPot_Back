@@ -3,6 +3,7 @@ package com.hanium.emoji_pot.domain.users;
 import com.hanium.emoji_pot.domain.BaseTimeEntity;
 import com.hanium.emoji_pot.domain.posts.Post;
 import com.hanium.emoji_pot.domain.users.dto.UserModifyRequestDto;
+import com.hanium.emoji_pot.domain.users.dto.UserPasswordModifyRequestDto;
 import com.hanium.emoji_pot.domain.users.dto.UserRegisterRequestDto;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -72,6 +73,10 @@ public class User extends BaseTimeEntity {
         this.username = userModifyRequest.getUsername();
         this.profileImage = userModifyRequest.getProfileImage();
         this.introduce = userModifyRequest.getIntroduce();
+    }
+
+    public void modifyPassword(String modifiedPassword) {
+        this.password = modifiedPassword;
     }
 
 }

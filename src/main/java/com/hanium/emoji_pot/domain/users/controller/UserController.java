@@ -8,6 +8,7 @@ import com.hanium.emoji_pot.global.exception.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -64,15 +65,26 @@ public class UserController {
     }
 
     @PatchMapping("/modify/{userId}")
-    public ResponseEntity modifyUser(@PathVariable("userId") Long userId, @Validated @RequestBody UserModifyRequestDto userModifyRequest) throws SQLException {
+    public ResponseEntity modifyUser(@PathVariable("userId") Long userId, @Validated @RequestBody UserModifyRequestDto userModifyRequest, Authentication authentication) throws SQLException {
         User user = userService.findUserById(userId);
-        String requestUsername = user.getUsername();
-        log.info("사용자 정보 수정 요청자 닉네임 : {}",requestUsername);
+        String requestUserEmail = authentication.getName();
+        log.info("사용자 정보 수정 요청자 이메일 : {}", requestUserEmail);
 
-        userService.modifyUser(userModifyRequest, userId);
+        userService.modifyUser(userModifyRequest, userId, requestUserEmail);
         UserModifyResponseDto userModifyResponse = new UserModifyResponseDto(user);
 
         return ResponseEntity.ok(Response.success(userModifyResponse));
+    }
+
+    @PatchMapping("/password/{userId}")
+    public Response modifyPassword(@PathVariable("userId") Long userId, @Validated @RequestBody UserPasswordModifyRequestDto passwordModifyRequest, Authentication authentication) throws SQLException {
+        User user = userService.findUserById(userId);
+        String requestUserEmail = authentication.getName();
+        log.info("비밀번호 수정 요청자 email : {}", requestUserEmail);
+
+        userService.modifyPassword(passwordModifyRequest, userId, requestUserEmail);
+
+        return Response.success("비밀번호 변경 성공");
     }
 
     @GetMapping("/logout")
