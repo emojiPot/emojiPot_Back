@@ -77,6 +77,12 @@ public class PostService {
         return postRepository.findAllByLocationAndIsDeletedOrderByUpdatedAtDesc(location, false).stream().map(PostListDto::new).collect(Collectors.toList());
     }
 
+    // 게시글 전체 조회
+    @Transactional
+    public List<PostListDto> getAllPosts() throws SQLException {
+        return postRepository.findAllByIsDeletedOrderByUpdatedAtDesc(false).stream().map(PostListDto::new).collect(Collectors.toList());
+    }
+
 
     public User userValid(String email) {
         return userRepository.findByEmailAndIsDeleted(email, false).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));

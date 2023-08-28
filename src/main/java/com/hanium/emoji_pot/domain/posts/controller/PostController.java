@@ -2,7 +2,6 @@ package com.hanium.emoji_pot.domain.posts.controller;
 
 import com.hanium.emoji_pot.domain.posts.dto.*;
 import com.hanium.emoji_pot.domain.posts.service.PostService;
-import com.hanium.emoji_pot.domain.users.service.UserService;
 import com.hanium.emoji_pot.global.exception.ExceptionManager;
 import com.hanium.emoji_pot.global.exception.Response;
 import lombok.RequiredArgsConstructor;
@@ -78,9 +77,14 @@ public class PostController {
         return Response.success(postService.getPostById(postId));
     }
 
-    @GetMapping("")
-    public Response searchByLocation(@RequestParam(value = "search") String location) throws SQLException {
+    @GetMapping("/search")
+    public Response searchByLocation(@RequestParam(value = "location") String location) throws SQLException {
         return Response.success(postService.getPostByLocation(location));
+    }
+
+    @GetMapping("")
+    public Response getAllPosts() throws SQLException {
+        return Response.success(postService.getAllPosts());
     }
 
 }
