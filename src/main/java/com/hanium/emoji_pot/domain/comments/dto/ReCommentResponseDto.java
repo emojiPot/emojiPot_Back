@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReplyCommentResponseDto {
+public class ReCommentResponseDto {
 
     private Long commentId;
 
@@ -24,7 +24,7 @@ public class ReplyCommentResponseDto {
 
     private Long parentCommentId;
 
-    public ReplyCommentResponseDto(Comment comment, String username, Long postId, Long parentCommentId) {
+    public ReCommentResponseDto(Comment comment, String username, Long postId, Long parentCommentId) {
         this.commentId = comment.getCommentId();
         this.content = comment.getContent();
         this.username = username;
