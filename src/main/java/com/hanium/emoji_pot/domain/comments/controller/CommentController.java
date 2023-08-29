@@ -42,6 +42,13 @@ public class CommentController {
         return ResponseEntity.ok(Response.success(commentResponse));
     }
 
+    @GetMapping("/{postId}/comments")
+    public Response getAllCommentsByPostId(@PathVariable("postId") Long postId) throws SQLException {
+        log.info("댓글 조회할 게시글 id : {}", postId);
+
+        return Response.success(commentService.getAllCommentsByPostId(postId));
+    }
+
     @PostMapping("/{postId}/comments/{commentId}")
     public ResponseEntity createReplyComment(@PathVariable("postId") Long postId, @PathVariable(name = "commentId") Long parentCommentId, @Validated @RequestBody ReCommentRequestDto replyCommentRequest, BindingResult br, Authentication authentication) throws SQLException {
         log.info("대댓글을 작성하려는 게시글 id : {} 댓글 id : {}", postId, parentCommentId);
@@ -54,7 +61,7 @@ public class CommentController {
         String requestUserEmail = authentication.getName();
         log.info("대댓글 작성 요청자 Email : {}", requestUserEmail);
 
-        ReCommentResponseDto responseDto = commentService.writeReplyComment(replyCommentRequest, requestUserEmail, postId, parentCommentId);
+        ReCommentResponseDto responseDto = commentService.saveReComment(replyCommentRequest, requestUserEmail, postId, parentCommentId);
 
         return ResponseEntity.ok(Response.success(responseDto));
     }

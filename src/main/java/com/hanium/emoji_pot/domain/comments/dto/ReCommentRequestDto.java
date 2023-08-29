@@ -12,6 +12,6 @@ import javax.validation.constraints.NotBlank;
 public class ReCommentRequestDto {
 
     @NotBlank
-    private String replyContent;
+    private String reCommentContent;
 
 }

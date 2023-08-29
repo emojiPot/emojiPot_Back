@@ -2,10 +2,7 @@ package com.hanium.emoji_pot.domain.comments.service;
 
 import com.hanium.emoji_pot.domain.comments.Comment;
 import com.hanium.emoji_pot.domain.comments.CommentRepository;
-import com.hanium.emoji_pot.domain.comments.dto.CommentRequestDto;
-import com.hanium.emoji_pot.domain.comments.dto.CommentResponseDto;
-import com.hanium.emoji_pot.domain.comments.dto.ReCommentRequestDto;
-import com.hanium.emoji_pot.domain.comments.dto.ReCommentResponseDto;
+import com.hanium.emoji_pot.domain.comments.dto.*;
 import com.hanium.emoji_pot.domain.posts.Post;
 import com.hanium.emoji_pot.domain.posts.PostRepository;
 import com.hanium.emoji_pot.domain.users.User;
@@ -18,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +28,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
+    // 댓글 작성
     @Transactional
     public CommentResponseDto saveComment(CommentRequestDto commentRequest, String requestUserEmail, Long postId) throws SQLException {
         User user = userValid(requestUserEmail);
@@ -40,13 +40,20 @@ public class CommentService {
         return new CommentResponseDto(comment, requestUserEmail, postId);
     }
 
+    // 게시글의 댓글 조회
+    public List<CommentListDto> getAllCommentsByPostId(Long postId) throws SQLException {
+        Post post = postValid(postId);
+        return commentRepository.findByPostAndParentIsNullOrderByCreatedAtDesc(post).stream().map(CommentListDto::new).collect(Collectors.toList());
+    }
+
+    // 대댓글 작성
     @Transactional
-    public ReCommentResponseDto writeReplyComment(ReCommentRequestDto replyCommentRequest, String requestUserEmail, Long postId, Long parentCommentId) throws SQLException {
+    public ReCommentResponseDto saveReComment(ReCommentRequestDto replyCommentRequest, String requestUserEmail, Long postId, Long parentCommentId) throws SQLException {
         User user = userValid(requestUserEmail);
         Post post = postValid(postId);
         Comment parentComment = commentValid(parentCommentId);
 
-        Comment comment = Comment.createReplyComment(replyCommentRequest.getReplyContent(), user, post, parentComment);
+        Comment comment = Comment.createReComment(replyCommentRequest.getReCommentContent(), user, post, parentComment);
         commentRepository.save(comment);
 
         return new ReCommentResponseDto(comment, requestUserEmail, postId, parentCommentId);

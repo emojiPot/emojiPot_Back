@@ -57,7 +57,7 @@ public class Comment extends BaseTimeEntity {
         return new Comment(content, user, post);
     }
 
-    public static Comment createReplyComment(String content, User user, Post post, Comment parent) {
+    public static Comment createReComment(String content, User user, Post post, Comment parent) {
         return new Comment(content, user, post, parent);
     }
 
