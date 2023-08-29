@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -38,7 +38,7 @@ public class CommentService {
         Comment comment = Comment.createComment(commentRequest.getContent(), user, post);
         commentRepository.save(comment);
 
-        return new CommentResponseDto(comment, requestUserEmail, postId);
+        return new CommentResponseDto(comment, user.getUsername(), postId);
     }
 
     // 게시글의 댓글 조회
@@ -47,7 +47,8 @@ public class CommentService {
         return commentRepository.findByPostAndParentIsNullOrderByCreatedAtDesc(post).stream().map(CommentListDto::new).collect(Collectors.toList());
     }
 
-    // 댓글 수정
+    // 댓글, 대댓글 수정
+    @Transactional
     public CommentModifyResponseDto modifyComment(CommentModifyRequestDto commentModifyRequest, Long postId, Long commentId, String requestUserEmail) throws SQLException {
         User user = userValid(requestUserEmail);
         postValid(postId);
@@ -61,8 +62,26 @@ public class CommentService {
         checkAuth(requestUserEmail, author, requestUserRole);
         comment.modifyComment(commentModifyRequest.getContent());
 
-        return new CommentModifyResponseDto(commentRepository.saveAndFlush(comment), requestUserEmail, postId);
+        return new CommentModifyResponseDto(commentRepository.saveAndFlush(comment), user.getUsername(), postId);
     }
+
+    // 댓글 삭제
+    @Transactional
+    public void deleteComment(Long postId, Long commentId, String requestUserEmail) throws SQLException {
+        User requestUser = userValid(requestUserEmail);
+        postValid(postId);
+        Comment comment = commentValid(commentId);
+        UserRole requestUserRole = requestUser.getRole();
+        String author = comment.getUser().getEmail();
+        String authorName = comment.getUser().getUsername();
+
+        log.info("댓글 삭제 요청자 ROLE = {} 댓글 작성자 닉네임 = {}", requestUserRole, authorName);
+
+        checkAuth(requestUserEmail, author, requestUserRole);
+
+        commentRepository.delete(comment);
+    }
+
 
     // 대댓글 작성
     @Transactional

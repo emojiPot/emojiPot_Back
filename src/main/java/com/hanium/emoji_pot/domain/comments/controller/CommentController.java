@@ -46,24 +46,6 @@ public class CommentController {
         return Response.success(commentService.getAllCommentsByPostId(postId));
     }
 
-    @PatchMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity modify(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @Validated @RequestBody CommentModifyRequestDto commentModifyRequest, BindingResult br, Authentication authentication) throws SQLException {
-        log.info("댓글을 수정하려는 게시글 id : {} 댓글 id : {}", postId, commentId);
-        log.info("댓글 수정 requestDto : {}", commentModifyRequest);
-
-        if (br.hasErrors()) {
-            return ExceptionManager.ifNullAndBlank();
-        }
-
-        String requestUserEmail = authentication.getName();
-
-        log.info("댓글 수정 요청자 Email : {}", requestUserEmail);
-
-        CommentModifyResponseDto responseDto = commentService.modifyComment(commentModifyRequest, postId, commentId, requestUserEmail);
-
-        return ResponseEntity.ok(Response.success(responseDto));
-    }
-
     @PostMapping("/{postId}/comments/{commentId}/recomments")
     public ResponseEntity createReplyComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long parentCommentId, @Validated @RequestBody ReCommentRequestDto replyCommentRequest, BindingResult br, Authentication authentication) throws SQLException {
         log.info("대댓글을 작성하려는 게시글 id : {} 댓글 id : {}", postId, parentCommentId);
@@ -87,5 +69,37 @@ public class CommentController {
 
         return Response.success(commentService.getAllReCommentsByCommentId(postId, commentId));
     }
+
+    @PatchMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity modify(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @Validated @RequestBody CommentModifyRequestDto commentModifyRequest, BindingResult br, Authentication authentication) throws SQLException {
+        log.info("댓글을 수정하려는 게시글 id : {} 댓글 id : {}", postId, commentId);
+        log.info("댓글 수정 requestDto : {}", commentModifyRequest);
+
+        if (br.hasErrors()) {
+            return ExceptionManager.ifNullAndBlank();
+        }
+
+        String requestUserEmail = authentication.getName();
+
+        log.info("댓글 수정 요청자 Email : {}", requestUserEmail);
+
+        CommentModifyResponseDto responseDto = commentService.modifyComment(commentModifyRequest, postId, commentId, requestUserEmail);
+
+        return ResponseEntity.ok(Response.success(responseDto));
+    }
+
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public Response delete(@PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId, Authentication authentication) throws SQLException {
+        log.info("댓글을 삭제하려는 게시글 id : {} 댓글 id : {}", postId, commentId);
+
+        String requestUserEmail = authentication.getName();
+        log.info("댓글 삭제 요청자 Email : {}", requestUserEmail);
+
+        commentService.deleteComment(postId, commentId, requestUserEmail);
+
+        return Response.success("댓글 삭제 완료");
+    }
+
+
 
 }
