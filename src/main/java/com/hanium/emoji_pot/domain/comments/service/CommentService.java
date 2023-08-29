@@ -59,6 +59,14 @@ public class CommentService {
         return new ReCommentResponseDto(comment, requestUserEmail, postId, parentCommentId);
     }
 
+    // 댓글의 대댓글 조회
+    public List<CommentListDto> getAllReCommentsByCommentId(Long postId, Long commentId) throws SQLException {
+        Post post = postValid(postId);
+        Comment comment = commentValid(commentId);
+
+        return commentRepository.findByPostAndParentCommentId(post, commentId).stream().map(CommentListDto::new).collect(Collectors.toList());
+    }
+
     public User userValid(String email) {
         return userRepository.findByEmailAndIsDeleted(email, false)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));

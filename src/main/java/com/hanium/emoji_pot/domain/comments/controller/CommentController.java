@@ -49,8 +49,8 @@ public class CommentController {
         return Response.success(commentService.getAllCommentsByPostId(postId));
     }
 
-    @PostMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity createReplyComment(@PathVariable("postId") Long postId, @PathVariable(name = "commentId") Long parentCommentId, @Validated @RequestBody ReCommentRequestDto replyCommentRequest, BindingResult br, Authentication authentication) throws SQLException {
+    @PostMapping("/{postId}/comments/{commentId}/recomments")
+    public ResponseEntity createReplyComment(@PathVariable("postId") Long postId, @PathVariable("commentId") Long parentCommentId, @Validated @RequestBody ReCommentRequestDto replyCommentRequest, BindingResult br, Authentication authentication) throws SQLException {
         log.info("대댓글을 작성하려는 게시글 id : {} 댓글 id : {}", postId, parentCommentId);
         log.info("대댓글 작성 requestDto : {}", replyCommentRequest);
 
@@ -64,6 +64,13 @@ public class CommentController {
         ReCommentResponseDto responseDto = commentService.saveReComment(replyCommentRequest, requestUserEmail, postId, parentCommentId);
 
         return ResponseEntity.ok(Response.success(responseDto));
+    }
+
+    @GetMapping("/{postId}/comments/{commentId}/recomments")
+    public Response getAllReCommentsByCommentId(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId) throws SQLException {
+        log.info("대댓글 조회할 게시글 id : {} 댓글 id : {}", postId, commentId);
+
+        return Response.success(commentService.getAllReCommentsByCommentId(postId, commentId));
     }
 
 }
