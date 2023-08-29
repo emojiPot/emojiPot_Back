@@ -1,9 +1,6 @@
 package com.hanium.emoji_pot.domain.comments.controller;
 
-import com.hanium.emoji_pot.domain.comments.dto.CommentRequestDto;
-import com.hanium.emoji_pot.domain.comments.dto.CommentResponseDto;
-import com.hanium.emoji_pot.domain.comments.dto.ReCommentRequestDto;
-import com.hanium.emoji_pot.domain.comments.dto.ReCommentResponseDto;
+import com.hanium.emoji_pot.domain.comments.dto.*;
 import com.hanium.emoji_pot.domain.comments.service.CommentService;
 import com.hanium.emoji_pot.global.exception.ExceptionManager;
 import com.hanium.emoji_pot.global.exception.Response;
@@ -47,6 +44,24 @@ public class CommentController {
         log.info("댓글 조회할 게시글 id : {}", postId);
 
         return Response.success(commentService.getAllCommentsByPostId(postId));
+    }
+
+    @PatchMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity modify(@PathVariable("postId") Long postId, @PathVariable("commentId") Long commentId, @Validated @RequestBody CommentModifyRequestDto commentModifyRequest, BindingResult br, Authentication authentication) throws SQLException {
+        log.info("댓글을 수정하려는 게시글 id : {} 댓글 id : {}", postId, commentId);
+        log.info("댓글 수정 requestDto : {}", commentModifyRequest);
+
+        if (br.hasErrors()) {
+            return ExceptionManager.ifNullAndBlank();
+        }
+
+        String requestUserEmail = authentication.getName();
+
+        log.info("댓글 수정 요청자 Email : {}", requestUserEmail);
+
+        CommentModifyResponseDto responseDto = commentService.modifyComment(commentModifyRequest, postId, commentId, requestUserEmail);
+
+        return ResponseEntity.ok(Response.success(responseDto));
     }
 
     @PostMapping("/{postId}/comments/{commentId}/recomments")

@@ -7,6 +7,7 @@ import com.hanium.emoji_pot.domain.posts.Post;
 import com.hanium.emoji_pot.domain.posts.PostRepository;
 import com.hanium.emoji_pot.domain.users.User;
 import com.hanium.emoji_pot.domain.users.UserRepository;
+import com.hanium.emoji_pot.domain.users.UserRole;
 import com.hanium.emoji_pot.global.exception.AppException;
 import com.hanium.emoji_pot.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 public class CommentService {
 
     private final CommentRepository commentRepository;
@@ -44,6 +45,23 @@ public class CommentService {
     public List<CommentListDto> getAllCommentsByPostId(Long postId) throws SQLException {
         Post post = postValid(postId);
         return commentRepository.findByPostAndParentIsNullOrderByCreatedAtDesc(post).stream().map(CommentListDto::new).collect(Collectors.toList());
+    }
+
+    // 댓글 수정
+    public CommentModifyResponseDto modifyComment(CommentModifyRequestDto commentModifyRequest, Long postId, Long commentId, String requestUserEmail) throws SQLException {
+        User user = userValid(requestUserEmail);
+        postValid(postId);
+        Comment comment = commentValid(commentId);
+        UserRole requestUserRole = user.getRole();
+        String author = comment.getUser().getEmail();
+        String authorName = comment.getUser().getUsername();
+
+        log.info("댓글 수정 요청자 ROLE = {} 댓글 작성자 닉네임 = {}", requestUserRole, authorName);
+
+        checkAuth(requestUserEmail, author, requestUserRole);
+        comment.modifyComment(commentModifyRequest.getContent());
+
+        return new CommentModifyResponseDto(commentRepository.saveAndFlush(comment), requestUserEmail, postId);
     }
 
     // 대댓글 작성
@@ -85,6 +103,12 @@ public class CommentService {
     public Comment commentValid(Long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+    }
+
+    public void checkAuth(String requestEmail, String author, UserRole requestUserRole) {
+        if (!requestUserRole.equals(UserRole.ROLE_ADMIN) && !author.equals(requestEmail)) {
+            throw new AppException(ErrorCode.USER_NOT_MATCH);
+        }
     }
 
 }
