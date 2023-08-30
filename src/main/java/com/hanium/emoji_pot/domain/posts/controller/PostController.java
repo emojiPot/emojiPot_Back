@@ -34,7 +34,7 @@ public class PostController {
         }
 
         String requestUserEmail = authentication.getName();
-        log.info("작성 요청자 username : {}", requestUserEmail);
+        log.info("작성 요청자 Email : {}", requestUserEmail);
 
         PostResponseDto postResponse = postService.savePost(postRequest, requestUserEmail);
         return ResponseEntity.ok(Response.success(postResponse));

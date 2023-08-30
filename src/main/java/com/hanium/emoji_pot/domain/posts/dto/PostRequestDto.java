@@ -14,13 +14,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class PostRequestDto {
 
-    @NotNull
-    private String email;
-
     @Column(length = 30)
     private String location;
 
-    @NotBlank
     private Integer emotion;
 
     @NotBlank
