@@ -88,7 +88,7 @@ public class UserService {
             throw new AppException(ErrorCode.INVALID_PASSWORD, "잘못된 비밀번호 입니다");
         }
 
-        return new UserLoginResponseDto(JwtTokenUtil.createToken(requestEmail, found.getUserId(), secretKey));
+        return new UserLoginResponseDto(JwtTokenUtil.createToken(requestEmail, found.getUserId(), found.getUsername(), secretKey));
     }
 
     // 사용자 상세 조회

@@ -14,10 +14,11 @@ public class JwtTokenUtil {
         return claims.get("email").toString();
     }
 
-    public static String createToken(String email, Long userId, String key) {
+    public static String createToken(String email, Long userId, String username, String key) {
         Claims claims = Jwts.claims();
         claims.put("email", email);
         claims.put("userId", userId);
+        claims.put("username", username);
 
         return Jwts.builder()
                 .setClaims(claims)
