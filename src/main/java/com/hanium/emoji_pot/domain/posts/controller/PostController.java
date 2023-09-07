@@ -7,11 +7,13 @@ import com.hanium.emoji_pot.global.exception.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.sql.SQLException;
@@ -24,7 +26,7 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity savePost(@Validated @RequestBody PostRequestDto postRequest, BindingResult br, Authentication authentication) throws SQLException {
         log.info("게시글 작성 requestDto : {}", postRequest);
@@ -85,6 +87,14 @@ public class PostController {
     @GetMapping("")
     public Response getAllPosts() throws SQLException {
         return Response.success(postService.getAllPosts());
+    }
+
+    @GetMapping("/mine")
+    public Response getMyPosts(Authentication authentication) throws SQLException {
+        String requestUserName = authentication.getName();
+        log.info("피드 조회 요청자 : {}", requestUserName);
+
+        return Response.success(postService.getMyPosts(requestUserName));
     }
 
 }

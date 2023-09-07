@@ -1,10 +1,16 @@
 package com.hanium.emoji_pot.domain.posts.dto;
 
+import com.hanium.emoji_pot.domain.comments.dto.CommentListDto;
+import com.hanium.emoji_pot.domain.images.Image;
+import com.hanium.emoji_pot.domain.images.dto.ImageUploadDto;
 import com.hanium.emoji_pot.domain.posts.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor

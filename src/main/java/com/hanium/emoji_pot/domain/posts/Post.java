@@ -1,6 +1,7 @@
 package com.hanium.emoji_pot.domain.posts;
 
 import com.hanium.emoji_pot.domain.BaseTimeEntity;
+import com.hanium.emoji_pot.domain.images.Image;
 import com.hanium.emoji_pot.domain.likes.Like;
 import com.hanium.emoji_pot.domain.posts.dto.PostRequestDto;
 import com.hanium.emoji_pot.domain.posts.dto.PostUpdateRequestDto;
@@ -45,6 +46,9 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post")
     List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post")
+    List<Image> images = new ArrayList<>();
 
     public Post(String location, Integer emotion, String record, User user) {
         this.location = location;
