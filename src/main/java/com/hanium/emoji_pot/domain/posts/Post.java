@@ -69,6 +69,14 @@ public class Post extends BaseTimeEntity {
         this.record = postUpdateRequestDto.getRecord();
     }
 
+    public void setOpen() {
+        this.isOpened = true;
+    }
+
+    public void setNotOpen() {
+        this.isOpened = false;
+    }
+
     public void deletePost() {
         this.isDeleted = true;
     }

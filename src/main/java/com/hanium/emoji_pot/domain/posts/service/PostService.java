@@ -91,6 +91,36 @@ public class PostService {
         return postRepository.findAllByUserAndIsDeletedOrderByCreatedAtDesc(requestUser, false).stream().map(post -> new PostListDto(post)).collect(Collectors.toList());
     }
 
+    @Transactional
+    public void isOpen(Long postId, String requestUserEmail) {
+        User requestUser = userValid(requestUserEmail);
+        Post post = postValid(postId);
+
+        UserRole requestUserRole = requestUser.getRole();
+        String author = post.getUser().getEmail();
+
+        log.info("게시글 공개 요청자 ROLE = {} 게시글 작성자 author = {}", requestUserRole, author);
+
+        checkAuth(requestUserEmail, author, requestUserRole);
+
+        post.setOpen();
+    }
+
+    @Transactional
+    public void isNotOpen(Long postId, String requestUserEmail) {
+        User requestUser = userValid(requestUserEmail);
+        Post post = postValid(postId);
+
+        UserRole requestUserRole = requestUser.getRole();
+        String author = post.getUser().getEmail();
+
+        log.info("게시글 비공개 요청자 ROLE = {} 게시글 작성자 author = {}", requestUserRole, author);
+
+        checkAuth(requestUserEmail, author, requestUserRole);
+
+        post.setNotOpen();
+    }
+
 
     public User userValid(String email) {
         return userRepository.findByEmailAndIsDeleted(email, false).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));

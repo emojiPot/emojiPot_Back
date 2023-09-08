@@ -97,4 +97,24 @@ public class PostController {
         return Response.success(postService.getMyPosts(requestUserName));
     }
 
+    @PatchMapping("/{postId}/open")
+    public Response isOpen(@PathVariable("postId") Long postId, Authentication authentication) throws SQLException {
+        String requestEmail = authentication.getName();
+        log.info("공개 요청한 게시글 id : {} 공개 요청자 Email : {}", postId, requestEmail);
+
+        postService.isOpen(postId, requestEmail);
+
+        return Response.success("공개 설정 되었습니다.");
+    }
+
+    @PatchMapping("/{postId}/notOpen")
+    public Response isNotOpen(@PathVariable("postId") Long postId, Authentication authentication) throws SQLException {
+        String requestEmail = authentication.getName();
+        log.info("비공개 요청한 게시글 id : {} 비공개 요청자 Email : {}", postId, requestEmail);
+
+        postService.isNotOpen(postId, requestEmail);
+
+        return Response.success("비공개 설정 되었습니다.");
+    }
+
 }
