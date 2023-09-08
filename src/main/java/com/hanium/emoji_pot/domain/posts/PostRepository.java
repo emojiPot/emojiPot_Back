@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByPostIdAndIsDeleted(Long postId, Boolean isDeleted);
-    List<Post> findAllByIsDeletedOrderByCreatedAtDesc(Boolean isDeleted);
-    List<Post> findAllByLocationAndIsDeletedOrderByCreatedAtDesc(String location, Boolean isDeleted);
+    List<Post> findAllByIsDeletedAndIsOpenedOrderByCreatedAtDesc(Boolean isDeleted, Boolean isOpened);
+    List<Post> findAllByLocationAndIsDeletedAndIsOpenedOrderByCreatedAtDesc(String location, Boolean isDeleted, Boolean isOpened);
     List<Post> findAllByUserAndIsDeletedOrderByCreatedAtDesc(User user, Boolean isDeleted);
 }

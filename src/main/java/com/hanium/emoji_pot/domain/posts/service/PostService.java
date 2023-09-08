@@ -74,13 +74,13 @@ public class PostService {
     // 게시글 장소로 검색
     @Transactional
     public List<PostListDto> getPostByLocation(String location) throws SQLException {
-        return postRepository.findAllByLocationAndIsDeletedOrderByCreatedAtDesc(location, false).stream().map(PostListDto::new).collect(Collectors.toList());
+        return postRepository.findAllByLocationAndIsDeletedAndIsOpenedOrderByCreatedAtDesc(location, false, true).stream().map(PostListDto::new).collect(Collectors.toList());
     }
 
     // 게시글 전체 조회
     @Transactional
     public List<PostListDto> getAllPosts() throws SQLException {
-        return postRepository.findAllByIsDeletedOrderByCreatedAtDesc(false).stream().map(PostListDto::new).collect(Collectors.toList());
+        return postRepository.findAllByIsDeletedAndIsOpenedOrderByCreatedAtDesc(false, true).stream().map(PostListDto::new).collect(Collectors.toList());
     }
 
     // 자신의 게시글 조회
