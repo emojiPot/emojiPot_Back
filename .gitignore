@@ -1,0 +1,11 @@
+### Example member template template
+### Example member template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+.gradle
+build
+*.yml
