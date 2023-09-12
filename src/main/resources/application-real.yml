@@ -2,6 +2,14 @@ spring:
   profiles:
     include: oauth, real-db
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQL57Dialect
   session:
     store-type: jdbc
+    jdbc:
+      initialize-schema: always
+
+server:
+  servlet:
+    encoding:
+      charset: utf-8
+      force: true
