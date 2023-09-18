@@ -14,14 +14,14 @@ import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/posts")
+@RequestMapping("/v1")
 @RequiredArgsConstructor
 @Slf4j
 public class ImageController {
 
     private final ImageService imageService;
 
-    @PostMapping("/{postId}/images")
+    @PostMapping("/posts/{postId}/images")
     public Response uploadImage(@PathVariable("postId") Long postId, @RequestPart List<MultipartFile> files, Authentication authentication) throws IOException, SQLException {
         String requestEmail = authentication.getName();
         log.info("이미지를 추가할 게시글 id : {} 이미지 추가 요청자 Email : {}", postId, requestEmail);
@@ -29,9 +29,14 @@ public class ImageController {
         return Response.success("이미지를 추가했습니다.");
     }
 
-    @GetMapping("/{postId}/images")
+    @GetMapping("/posts/{postId}/images")
     public Response getImages(@PathVariable("postId") Long postId) {
         return Response.success(imageService.getImages(postId));
+    }
+
+    @GetMapping("/images")
+    public Response getAllImages() throws SQLException {
+        return Response.success(imageService.getAllImages());
     }
 
 }

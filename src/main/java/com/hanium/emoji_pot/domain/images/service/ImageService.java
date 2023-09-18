@@ -133,4 +133,8 @@ public class ImageService {
         return post;
     }
 
+    public List<String> getAllImages() throws SQLException {
+        return imageRepository.findAll().stream().map(Image::getImageUrl).collect(Collectors.toList());
+    }
+
 }
