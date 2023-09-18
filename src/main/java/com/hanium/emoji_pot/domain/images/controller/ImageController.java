@@ -39,4 +39,11 @@ public class ImageController {
         return Response.success(imageService.getAllImages());
     }
 
+    @DeleteMapping("/images/{imageId}")
+    public Response delete(@PathVariable("imageId") Long imageId) throws SQLException {
+        log.info("삭제할 이미지 id : {}", imageId);
+        imageService.deleteImage(imageId);
+        return Response.success("이미지를 삭제했습니다.");
+    }
+
 }

@@ -137,4 +137,11 @@ public class ImageService {
         return imageRepository.findAll().stream().map(Image::getImageUrl).collect(Collectors.toList());
     }
 
+    public void deleteImage(long imageId) throws SQLException {
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new AppException(ErrorCode.IMAGE_NOT_FOUND));
+        imageRepository.delete(image);
+    }
+
+
 }
