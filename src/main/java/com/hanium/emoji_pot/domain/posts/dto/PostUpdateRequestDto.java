@@ -17,9 +17,7 @@ public class PostUpdateRequestDto {
     @Column(length = 30)
     private String location;
 
-    @NotEmpty
     private Integer emotion;
-
-    @NotEmpty
+    
     private String record;
 }
