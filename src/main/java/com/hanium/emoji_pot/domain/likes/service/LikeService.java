@@ -41,6 +41,19 @@ public class LikeService {
         }
     }
 
+    @Transactional
+    public Boolean isLiked(Long postId, String requestEmail) throws SQLException {
+        User requestUser = userValid(requestEmail);
+        Post post = postValid(postId);
+        Optional<Like> like = likeValid(requestUser, post);
+
+        if (like.isPresent()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public User userValid(String email) {
         return userRepository.findByEmailAndIsDeleted(email, false)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
