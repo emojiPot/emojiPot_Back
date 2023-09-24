@@ -38,12 +38,4 @@ public class ImageController {
     public Response getAllImages() throws SQLException {
         return Response.success(imageService.getAllImages());
     }
-
-    @DeleteMapping("/posts/{postId}/images")
-    public Response delete(@PathVariable("postId") Long postId) throws SQLException {
-        log.info("삭제할 게시글 id : {}", postId);
-        imageService.deleteImage(postId);
-        return Response.success("게시글에 해당하는 이미지를 삭제했습니다.");
-    }
-
 }

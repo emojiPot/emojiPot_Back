@@ -147,7 +147,7 @@ public class ImageService {
     public List<String> getAllImages() throws SQLException {
         return imageRepository.findAll().stream().map(Image::getImageUrl).collect(Collectors.toList());
     }
-    
+
     @Transactional
     public List<Image> getImagesByPostId(Long postId) {
         Post post = postValid(postId);
