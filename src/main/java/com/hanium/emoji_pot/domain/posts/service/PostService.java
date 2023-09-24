@@ -1,5 +1,6 @@
 package com.hanium.emoji_pot.domain.posts.service;
 
+import com.hanium.emoji_pot.domain.images.service.ImageService;
 import com.hanium.emoji_pot.domain.posts.Post;
 import com.hanium.emoji_pot.domain.posts.PostRepository;
 import com.hanium.emoji_pot.domain.posts.dto.*;
@@ -25,6 +26,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ImageService imageService;
 
     // 게시글 작성
     @Transactional
@@ -61,6 +63,7 @@ public class PostService {
         log.info("게시글 수정 요청자 ROLE = {} 게시글 작성자 author = {}", requestUserRole, author);
 
         checkAuth(requestEmail, author, requestUserRole);
+        imageService.deleteImage(postId);
         post.deletePost();
     }
 

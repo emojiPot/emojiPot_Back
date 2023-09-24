@@ -11,6 +11,7 @@ import com.hanium.emoji_pot.domain.posts.Post;
 import com.hanium.emoji_pot.domain.posts.PostRepository;
 import com.hanium.emoji_pot.domain.users.User;
 import com.hanium.emoji_pot.domain.users.UserRepository;
+import com.hanium.emoji_pot.domain.users.UserRole;
 import com.hanium.emoji_pot.global.exception.AppException;
 import com.hanium.emoji_pot.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class ImageService {
 
     private final AmazonS3Client amazonS3Client;
@@ -43,21 +46,20 @@ public class ImageService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
-    @Value("${cloud.aws.s3.bucket}")                                                        //bucket 이름
+    @Value("${cloud.aws.s3.bucket}")
     public String bucket;
 
-//    public ImageUploadDto fileUpload(MultipartFile file, String requestEmail) throws IOException {
-//
-//        File uploadFile = convert(file).orElseThrow(() -> new IllegalArgumentException("파일 업로드에 실패하였습니다."));
-//
-//        String dir = "static/images/".concat(requestEmail);
-//
-//        return upload(uploadFile, dir);
-//    }
-
+    @Transactional
     public void imageUpload(Long postId, String requestEmail, List<MultipartFile> files) throws IOException, SQLException {
         User requestUser = userValid(requestEmail);
         Post post = postValid(postId);
+
+        UserRole requestUserRole = requestUser.getRole();
+        String author = post.getUser().getEmail();
+
+        log.info("게시글 이미지 추가 요청자 ROLE = {} 게시글 작성자 author = {}", requestUserRole, author);
+
+        checkAuth(requestEmail, author, requestUserRole);
 
         for (MultipartFile file : files) {
             File uploadFile = convert(file).orElseThrow(() -> new IllegalArgumentException("파일 업로드에 실패하였습니다."));
@@ -112,12 +114,14 @@ public class ImageService {
         return Optional.empty();
     }
 
+    @Transactional
     public List<String> getImages(Long postId) {
         Post post = postValid(postId);
 
         return imageRepository.findAllByPost(post).stream().map(Image::getImageUrl).collect(Collectors.toList());
     }
 
+    @Transactional
     public User userValid(String email) {
         return userRepository.findByEmailAndIsDeleted(email, false)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -133,15 +137,36 @@ public class ImageService {
         return post;
     }
 
+    public void checkAuth(String requestEmail, String author, UserRole requestUserRole) {
+        if (!requestUserRole.equals(UserRole.ROLE_ADMIN) && !author.equals(requestEmail)) {
+            throw new AppException(ErrorCode.USER_NOT_MATCH);
+        }
+    }
+
+    @Transactional
     public List<String> getAllImages() throws SQLException {
         return imageRepository.findAll().stream().map(Image::getImageUrl).collect(Collectors.toList());
     }
+    
+    @Transactional
+    public List<Image> getImagesByPostId(Long postId) {
+        Post post = postValid(postId);
 
-    public void deleteImage(long imageId) throws SQLException {
-        Image image = imageRepository.findById(imageId)
-                .orElseThrow(() -> new AppException(ErrorCode.IMAGE_NOT_FOUND));
-        imageRepository.delete(image);
+        return imageRepository.findAllByPost(post);
     }
 
+    // 이미지 삭제
+    @Transactional
+    public void deleteImage(Long postId) throws SQLException{
+        String splitStr = ".com/";
+        List<Image> imageList = getImagesByPostId(postId);
+        for (Image image : imageList) {
+            String fileUrl = image.getImageUrl();
+            String fileName = fileUrl.substring(fileUrl.lastIndexOf(splitStr) + splitStr.length());
+
+            amazonS3Client.deleteObject(bucket, fileName);
+            imageRepository.delete(image);
+        }
+    }
 
 }
